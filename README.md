@@ -19,4 +19,4 @@
 - 7、打开想要联机的游戏，如果是本地联机，那就照常选择本地联机。如果是局域网联机，按下左摇杆+R+L切换到局域网模式即可，比如马车8
 
 # 有问题
-请在[这里]()先寻找答案，找不到再提issues
+请在[这里](https://github.com/liuzhushaonian/LanPlayAndoird/blob/master/QUEST.md)先寻找答案，找不到再提issues
