@@ -106,7 +106,7 @@ public class ShellCommandExecutor {
         try {
             Process p = Runtime.getRuntime().exec("su");
             dos = new DataOutputStream(p.getOutputStream());
-//            Log.i(TAG, command);
+            Log.i(TAG, command);
             dos.writeBytes(command + "\n");
             dos.flush();
             dos.writeBytes("1" + "\n");
@@ -160,12 +160,16 @@ public class ShellCommandExecutor {
 
     public static String getOsErrorReader() {
         try {
+            if (osErrorReader==null){
+                return "";
+            }
+
             return readOSMessage(osErrorReader);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return null;
+        return "";
     }
 
     //读取执行命令后返回的信息

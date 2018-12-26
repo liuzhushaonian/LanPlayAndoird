@@ -1,7 +1,13 @@
 # About
 
 本APP基于[switch-lan-play](https://github.com/spacemeowx2/switch-lan-play)
+
 感谢大佬做出此软件
+
+# 下载地址
+
+[点击这里前往下载](https://github.com/liuzhushaonian/LanPlayAndoird/releases)
+
 
 # 这到底是个啥玩意儿啊？给个教程呗。
 这是个可以让NS通过Android手机来与远方的NS进行联机的APP。如果你是正版用户，又希望与远方的人进行局域网联机，那么就可以使用本APP来进行相关配置并联机，前提是对方也是与你处在同一配置下。

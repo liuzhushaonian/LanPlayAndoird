@@ -420,6 +420,10 @@ public class MainActivity extends BaseActivity {
         //启动命令
         String startCommand = "./lan-play --relay-server-addr " + preBean.getUrl();
 
+        preBean.setSelect(1);
+
+        adapter.notifyDataSetChanged();
+
 
         new Thread() {
 
@@ -431,18 +435,17 @@ public class MainActivity extends BaseActivity {
 
                 String result = ShellCommandExecutor.getOsErrorReader();
 
+//                Log.d("result--->>>",result);
 
                 runOnUiThread(() -> {
 
-                    if (result != null && result.contains("ERROR")) {
+                    if (result.contains("ERROR")) {
 
-                        Toast.makeText(MainActivity.this, "启动失败\n" + result, Toast.LENGTH_LONG).show();
-
-                    } else {
-
-                        preBean.setSelect(1);
+                        preBean.setSelect(-1);
 
                         adapter.notifyDataSetChanged();
+
+                        Toast.makeText(MainActivity.this, "启动失败\n" + result, Toast.LENGTH_LONG).show();
 
                     }
 

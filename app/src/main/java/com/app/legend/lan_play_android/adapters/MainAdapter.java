@@ -112,9 +112,14 @@ public class MainAdapter extends BaseAdapter<MainAdapter.ViewHolder> {
         if (bean.getSelect()>0){
 
             holder.icons.setBackgroundColor(holder.view.getResources().getColor(R.color.colorGreen));
+            holder.more_menu.setClickable(false);
+
+
         }else {
 
             holder.icons.setBackgroundColor(holder.view.getResources().getColor(R.color.colorGrey));
+            holder.more_menu.setClickable(true);
+
         }
 
 //        if (bean)
