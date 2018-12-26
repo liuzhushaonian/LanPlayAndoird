@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.PreferenceFragment"
+    android:background="@color/colorWhite"
+    >
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_marginTop="@dimen/half_de"
+        >
+
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/lib64_info"
+            android:gravity="center"
+            android:text="@string/lib64_info"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/lib_info"
+            android:gravity="center"
+            android:text="@string/lib_info"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/infos"
+            android:gravity="center"
+            android:layout_marginTop="@dimen/default_space"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:id="@+id/get_all"
+            />
+
+
+    </LinearLayout>
+
+
+
+
+</FrameLayout>

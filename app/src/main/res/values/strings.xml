@@ -1,0 +1,54 @@
+<resources>
+    <string name="app_name">lan-play-android</string>
+
+    <string name="comd">输入命令</string>
+
+    <string name="button">点击测试</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="infos">一点说明\n
+        如果lib64或者lib其中一个已存在\n
+        则无需再继续\n
+        可以返回连接服务器了\n\n
+
+        本APP基于lan-play\n
+        所以需要root权限\n
+        轻触以授予root权限并继续\n
+
+    </string>
+
+    <string name="about">
+        本APP基于https://github.com/spacemeowx2/switch-lan-play\n\n
+        感谢大佬做出如此优秀的联机插件\n\n
+        本人不提供任何服务器\n\n
+        有问题？访问下面的链接
+
+
+    </string>
+
+    <string name="root_info">root状态:</string>
+
+    <string name="lib64_info">lib64状态:</string>
+
+    <string name="lib_info">lib状态:</string>
+
+    <string name="get_all">一键配置</string>
+
+    <string name="server_name">名字</string>
+    <string name="server_ip">ip:port 或者 域名:port</string>
+
+    <string name="pre">配置</string>
+
+    <string name="delete_lib">这项操作是用于删除放置于system下的lib依赖\n
+        如果你想卸载本APP\n
+        那就执行本操作\n
+        依赖删除后将无法正常运行lan-play\n
+        当然你可以在配置页面重新配置依赖\n
+
+    </string>
+
+
+
+</resources>

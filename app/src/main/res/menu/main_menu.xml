@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:title="删除依赖"
+        android:id="@+id/delete_lib"
+        android:icon="@drawable/ic_add_black_24dp"
+        />
+
+    <item
+        android:title="查阅日志"
+        android:id="@+id/show_logs"
+        />
+
+    <item
+        android:title="关于"
+        android:id="@+id/about"
+        app:showAsAction="never"
+        
+        />
+
+</menu>
