@@ -5,6 +5,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
@@ -703,6 +704,23 @@ public class MainActivity extends BaseActivity {
         TextView textView=view.findViewById(R.id.text_about);
 
         String text=getString(R.string.about);
+
+
+        String versionName="";
+
+        try {
+
+            PackageManager pm = getPackageManager();
+            PackageInfo pi = pm.getPackageInfo(getPackageName(), 0);
+
+            versionName = pi.versionName;
+
+        } catch (Exception e) {
+            Log.e("VersionInfo", "Exception", e);
+        }
+
+        text=text+"\n\n当前版本："+versionName;
+
 
         textView.setText(text);
 

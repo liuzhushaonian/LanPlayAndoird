@@ -20,7 +20,8 @@
     </string>
 
     <string name="about">
-        本APP基于https://github.com/spacemeowx2/switch-lan-play\n\n
+        本APP基于lan-play\n\n
+        地址：https://github.com/spacemeowx2/switch-lan-play\n\n
         感谢大佬做出如此优秀的联机插件\n\n
         本人不提供任何服务器\n\n
         有问题？访问下面的链接\n
@@ -42,11 +43,11 @@
 
     <string name="pre">配置</string>
 
-    <string name="delete_lib">这项操作是用于删除放置于system下的lib依赖\n
-        如果你想卸载本APP\n
-        那就执行本操作\n
-        依赖删除后将无法正常运行lan-play\n
-        当然你可以在配置页面重新配置依赖\n
+    <string name="delete_lib">这项操作是用于删除放置于system下的lib依赖\n\n
+        如果你想卸载本APP\n\n
+        那就执行本操作\n\n
+        依赖删除后将无法正常运行lan-play\n\n
+        当然你可以在配置页面重新配置依赖\n\n
 
     </string>
 
