@@ -3,7 +3,6 @@ package com.app.legend.lan_play_android.fragments;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
@@ -22,9 +21,7 @@ import com.app.legend.lan_play_android.utils.RootGet;
 import com.app.legend.lan_play_android.utils.ShellCommandExecutor;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Objects;
 
 /**
@@ -72,7 +69,7 @@ public class PreferenceFragment extends Fragment {
         String[] list = null;
 
         try {
-            list = context.getAssets().list("libs");
+            list = context.getAssets().list("libs64");
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -99,7 +96,7 @@ public class PreferenceFragment extends Fragment {
             lib64.setText("lib64状态:已存在");
 
             Objects.requireNonNull(getActivity())
-                    .getSharedPreferences("lan-play-android",Context.MODE_PRIVATE).edit()
+                    .getSharedPreferences("lan-play64-android",Context.MODE_PRIVATE).edit()
                     .putBoolean(Conf.FIRST,false)
                     .apply();
 
@@ -119,7 +116,7 @@ public class PreferenceFragment extends Fragment {
             lib.setTextColor(getResources().getColor(R.color.colorGreen));
             lib.setText("lib状态:已存在");
             Objects.requireNonNull(getActivity())
-                    .getSharedPreferences("lan-play-android",Context.MODE_PRIVATE).edit()
+                    .getSharedPreferences("lan-play64-android",Context.MODE_PRIVATE).edit()
                     .putBoolean(Conf.FIRST,false)
                     .apply();
 
@@ -193,10 +190,31 @@ public class PreferenceFragment extends Fragment {
 
                             //将lib文件拷贝到相关文件夹下
 
+                            String targetPath = "";
+
+
+
 
                             String[] libList = new String[0];
+
+                            String srcPath = getActivity().getFilesDir().getAbsolutePath()+ "/libs64/";
                             try {
-                                libList = getContext().getAssets().list("libs");
+
+
+                                if (MyUtils.is64()) {
+                                    libList = getContext().getAssets().list("libs64");
+
+                                    srcPath = getActivity().getFilesDir().getAbsolutePath()+ "/libs64/";
+
+                                    targetPath = Environment.getRootDirectory().getAbsolutePath() + "/lib64/";
+                                } else {
+
+                                    libList = getContext().getAssets().list("libs");
+
+                                    targetPath = Environment.getRootDirectory().getAbsolutePath() + "/lib/";
+
+                                    srcPath = getActivity().getFilesDir().getAbsolutePath()+ "/libs/";
+                                }
 
                             } catch (IOException e) {
                                 e.printStackTrace();
@@ -204,24 +222,14 @@ public class PreferenceFragment extends Fragment {
 
                             for (String s : libList) {
 
-                                String targetPath = "";
-
-                                if (MyUtils.is64()) {
-
-                                    targetPath = Environment.getRootDirectory().getAbsolutePath() + "/lib64/";
-                                } else {
-
-                                    targetPath = Environment.getRootDirectory().getAbsolutePath() + "/lib/";
-                                }
-
                                 //获取文件下的lib路径
 
 
-                                String srcPath = getActivity().getFilesDir().getAbsolutePath()+"/libs/"+s;
+                                srcPath=srcPath+s;
 
                                 String c="cp "+srcPath+" "+targetPath;
 
-                                Log.d("system---->>>", c);
+//                                Log.d("system---->>>", c);
 
                                 new ShellCommandExecutor().addCommand(c).execute();
 
@@ -233,7 +241,7 @@ public class PreferenceFragment extends Fragment {
 
                             new ShellCommandExecutor().addCommand(c).execute();
 
-                            SharedPreferences sharedPreferences=getActivity().getSharedPreferences("lan-play-android",Context.MODE_PRIVATE);
+                            SharedPreferences sharedPreferences=getActivity().getSharedPreferences("lan-play64-android",Context.MODE_PRIVATE);
 
                             sharedPreferences.edit().putBoolean(Conf.FIRST,false).apply();
 

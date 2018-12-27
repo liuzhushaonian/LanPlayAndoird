@@ -1,22 +1,16 @@
 package com.app.legend.lan_play_android.activities;
 
 
-import android.Manifest;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -45,8 +39,6 @@ import com.app.legend.lan_play_android.utils.ShellCommandExecutor;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -261,15 +253,29 @@ public class MainActivity extends BaseActivity {
 
     @WorkerThread
     private void copyFiles() {
+
+        String path="";
+
+        if (MyUtils.is64()){
+
+            path="lib64s/";
+
+        }else {
+
+            path="libs/";
+
+        }
+
+
         try {
-            String[] libList = getAssets().list("libs");
+            String[] libList = getAssets().list(path);
 
             for (String s : libList) {
-                String srcPath = "libs/" + s;
+                String srcPath = path + s;
 
                 String newPath = getApplicationContext().getFilesDir().getAbsolutePath();
 
-                newPath = newPath + "/libs/" + s;
+                newPath = newPath + "/"+path + s;
 
                 File file = new File(newPath);
 
@@ -345,7 +351,12 @@ public class MainActivity extends BaseActivity {
                 }
             }
 
-            openFileOutput("log.txt", Context.MODE_PRIVATE);//创建log文件记录pid
+            File file=new File(getFilesDir(),"log.txt");
+
+            if (!file.exists()){
+                openFileOutput("log.txt", Context.MODE_PRIVATE);//创建log文件记录pid
+            }
+
 
 
         } catch (IOException e) {
@@ -355,6 +366,7 @@ public class MainActivity extends BaseActivity {
     }
 
 
+    //显示配置界面
     private void showPreDialog(PreBean bean) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -415,10 +427,24 @@ public class MainActivity extends BaseActivity {
 
         Log.d("path---->>>", newPath);
 
+        String lan_play="";
+
         //改变lan-play的权限，设为777
 
+        if (MyUtils.is64()){
+
+            lan_play="lan-play64";
+
+        }else {
+
+            lan_play="lan-play";
+
+        }
+
         //启动命令
-        String startCommand = "./lan-play --relay-server-addr " + preBean.getUrl();
+        String startCommand = "./"+lan_play+" --relay-server-addr " + preBean.getUrl();
+
+        String chmod="chmod 777 "+lan_play;
 
         preBean.setSelect(1);
 
@@ -431,7 +457,7 @@ public class MainActivity extends BaseActivity {
             public void run() {
                 super.run();
 
-                new ShellCommandExecutor().addCommand("cd " + newPath).addCommand("chmod 777 lan-play").addCommand(startCommand).executePlay();
+                new ShellCommandExecutor().addCommand("cd " + newPath).addCommand(chmod).addCommand(startCommand).executePlay();
 
                 String result = ShellCommandExecutor.getOsErrorReader();
 
@@ -469,13 +495,13 @@ public class MainActivity extends BaseActivity {
             return;
         }
 
-        String path = getApplicationContext().getFilesDir().getAbsolutePath();
+//        String path = getApplicationContext().getFilesDir().getAbsolutePath();
 
 //        String newPath=getApplicationContext().getFilesDir().getAbsolutePath()+"/lan_plays/log.txt";
 
-        new ShellCommandExecutor().addCommand("cd " + path).addCommand("chmod 777 log.txt").execute();
-
-        LogUtils.log(ShellCommandExecutor.getOsReader());//记录
+//        new ShellCommandExecutor().addCommand("cd " + path).addCommand("chmod 777 log.txt").execute();
+//
+//        LogUtils.log(ShellCommandExecutor.getOsReader());//记录
 
         File file = new File(getFilesDir(), "log.txt");
 
@@ -578,7 +604,7 @@ public class MainActivity extends BaseActivity {
 
                         String[] libList = new String[0];
                         try {
-                            libList =getAssets().list("libs");
+                            libList =getAssets().list("libs64");
 
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -601,7 +627,7 @@ public class MainActivity extends BaseActivity {
 
                             String c="rm -f "+targetPath+s;
 
-                            Log.d("ccccc---->>>", c);
+//                            Log.d("ccccc---->>>", c);
 
                             new ShellCommandExecutor().addCommand(c).execute();
 

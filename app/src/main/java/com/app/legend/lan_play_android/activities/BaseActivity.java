@@ -23,7 +23,7 @@ public class BaseActivity extends AppCompatActivity {
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.setStatusBarColor(Color.TRANSPARENT);
 
-        sharedPreferences=getSharedPreferences("lan-play-android",MODE_PRIVATE);
+        sharedPreferences=getSharedPreferences("lan-play64-android",MODE_PRIVATE);
 
     }
 }

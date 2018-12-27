@@ -30,3 +30,7 @@
 
 # 9、好像没效果啊！
 额，我也不知道啊，因为没人跟我一起测试过啊= =
+
+# 10、提示'''[ERROR]: Failed to parse and get ip address. --relay-server-addr: example.com:port sush: <stdin>[5]: 1: not found'''是什么意思？
+请确保你输入的IP以及端口是否正确，还有远程服务器是否已经打开了相应的服务。如果没有，请前往原作者的lan-play下寻找如何打开服务器端。
+

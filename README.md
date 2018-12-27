@@ -1,3 +1,9 @@
+# 更新记录
+
+- 0.2-beta 更新lan-play速度修复版
+- 0.1-beta 完成初版
+
+
 # About
 
 本APP基于[switch-lan-play](https://github.com/spacemeowx2/switch-lan-play)

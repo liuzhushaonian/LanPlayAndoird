@@ -16,7 +16,7 @@ import java.util.function.LongFunction;
 public class Database extends SQLiteOpenHelper {
 
     private static volatile Database database;
-    private static final String MUSICDATABASE="lan-play-item";//数据库名称
+    private static final String MUSICDATABASE="lan-play64-item";//数据库名称
     private static int VERSION=1;//数据库版本
     private SQLiteDatabase sqLiteDatabase;//数据库实例
     private static final String DEFAULT_TABLE="items";
