@@ -16,8 +16,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:padding="@dimen/default_space"
-            android:textSize="16sp"
-            android:autoLink="all"
+            android:textSize="18sp"
+            android:autoLink="web"
             />
 
     </android.support.v4.widget.NestedScrollView>

@@ -72,13 +72,9 @@ public class Database extends SQLiteOpenHelper {
 
         if (cursor!=null){
 
-//            Log.d("cur---->>>",cursor.toString());
-
             if (cursor.moveToFirst()){
 
                 int id=cursor.getInt(0);//获取插入时的id
-
-                Log.d("id---->>>",id+"");
 
                 preBean.setId(id);
 

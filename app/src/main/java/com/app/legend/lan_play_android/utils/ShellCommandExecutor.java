@@ -4,9 +4,19 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.util.Map;
 
 /**
  * Android shell 命令执行器，支持无限个命令串型执行（需要有root权限！！）
@@ -33,59 +43,87 @@ import java.io.InputStreamReader;
  * 以上代码来自https://blog.csdn.net/han_han_1/article/details/79556733，感谢原作者，个人懒得写了
  */
 public class ShellCommandExecutor {
-    private static final String TAG = "ShellCommandExecutor";
 
-    private StringBuilder mCommands;
 
     private static BufferedReader osReader = null;
     private static BufferedReader osErrorReader = null;
+    private String[] commands;
+    private int number=-1;
 
 
-    public ShellCommandExecutor() {
-        mCommands = new StringBuilder();
-    }
+    public ShellCommandExecutor addCommand(String[] commands){
 
-    public int execute() {
-        return execute(mCommands.toString());
-    }
+        this.commands=commands;
 
-    public int executePlay() {
-        return executeLan(mCommands.toString());
-    }
-
-    public ShellCommandExecutor addCommand(String cmd) {
-        if (TextUtils.isEmpty(cmd)) {
-            throw new IllegalArgumentException("command can not be null.");
-        }
-        mCommands.append(cmd);
-        mCommands.append("\n");
         return this;
+
     }
 
-    private static int execute(String command) {
-        int result = -1;
+    public ShellCommandExecutor addNumber(int n){
+
+        this.number=n;
+
+        return this;
+
+    }
+
+
+    public void executePlay() {
+
+        executeLan(commands);
+    }
+
+    private void executeLan(String[] command) {
+
         DataOutputStream dos = null;
         try {
-            Process p = Runtime.getRuntime().exec("su");
-            dos = new DataOutputStream(p.getOutputStream());
-            Log.i(TAG, command);
-            dos.writeBytes(command + "\n");
-            dos.flush();
-//            dos.writeBytes("1 &" + "\n");
-//            dos.flush();
-            dos.writeBytes("exit\n");
-            dos.flush();
+
+            ProcessBuilder builder=new ProcessBuilder();
+
+
+            File file=new File(LanApp.getContext().getFilesDir().getAbsolutePath());
+
+            builder.directory(file);//设置改命令运行的位置，主要是在哪个文件夹内
+
+            Map<String,String> map=builder.environment();
+
+            if (MyUtils.is64()) {
+
+                map.put("LD_LIBRARY_PATH", LanApp.getContext().getFilesDir().getAbsolutePath() + "/libs64");//设置环境
+
+            }else {
+
+                map.put("LD_LIBRARY_PATH", LanApp.getContext().getFilesDir().getAbsolutePath() + "/libs");
+
+            }
+
+            builder.command(command);//运行命令
+
+
+            Process p =builder.start();
+
+            if (number!=-1) {
+
+                dos = new DataOutputStream(p.getOutputStream());
+
+                dos.writeBytes(number + "\n");
+
+                dos.flush();
+            }
+
+
+            p.waitFor();
+
+
+
 
             osReader=new BufferedReader(new InputStreamReader(p.getInputStream()));
             osErrorReader=new BufferedReader(new InputStreamReader(p.getErrorStream()));
 
-//            Log.d("cc--->>>",readOSMessage(osReader));
-
+//            Log.d("rr--->>>",readOSMessage(osReader));
 //            Log.e("ee---->>>",readOSMessage(osErrorReader));
 
             LogUtils.log(command);
-            p.waitFor();
-            result = p.exitValue();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -98,46 +136,6 @@ public class ShellCommandExecutor {
                 }
             }
         }
-        return result;
-    }
-    private static int executeLan(String command) {
-        int result = -1;
-        DataOutputStream dos = null;
-        try {
-            Process p = Runtime.getRuntime().exec("su");
-            dos = new DataOutputStream(p.getOutputStream());
-            Log.i(TAG, command);
-            dos.writeBytes(command + "\n");
-            dos.flush();
-            dos.writeBytes("1" + "\n");
-            dos.flush();
-            dos.writeBytes("exit\n");
-            dos.flush();
-
-            osReader=new BufferedReader(new InputStreamReader(p.getInputStream()));
-            osErrorReader=new BufferedReader(new InputStreamReader(p.getErrorStream()));
-
-//            Log.d("cc--->>>",readOSMessage(osReader));
-//
-//            Log.e("ee---->>>",readOSMessage(osErrorReader));
-
-            LogUtils.log(command);
-
-            p.waitFor();
-            result = p.exitValue();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (dos != null) {
-                try {
-                    dos.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return result;
     }
 
 
@@ -152,11 +150,6 @@ public class ShellCommandExecutor {
         return null;
     }
 
-    public static void cleanReader(){
-
-        osReader=null;
-
-    }
 
     public static String getOsErrorReader() {
         try {

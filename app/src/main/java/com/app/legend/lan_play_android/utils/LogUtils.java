@@ -48,6 +48,24 @@ public class LogUtils {
 
     }
 
+
+    public static void log(String[] logs){
+
+        StringBuilder builder=new StringBuilder();
+
+
+        for (String s:logs){
+
+//            log(s);
+
+            builder.append(s).append(" ");
+
+        }
+
+        log(builder.toString());
+
+    }
+
     public static void cleanLogs(){
 
         File file=new File(LanApp.getContext().getFilesDir(),"command.log");

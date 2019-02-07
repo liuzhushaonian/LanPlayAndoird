@@ -3,12 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:title="删除依赖"
-        android:id="@+id/delete_lib"
-        android:icon="@drawable/ic_add_black_24dp"
-        />
-
-    <item
         android:title="查阅日志"
         android:id="@+id/show_logs"
         />

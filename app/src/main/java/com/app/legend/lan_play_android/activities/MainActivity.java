@@ -5,12 +5,8 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.WorkerThread;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,30 +17,31 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.PopupMenu;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.app.legend.lan_play_android.R;
 import com.app.legend.lan_play_android.adapters.MainAdapter;
 import com.app.legend.lan_play_android.bean.PreBean;
-import com.app.legend.lan_play_android.fragments.PreferenceFragment;
 import com.app.legend.lan_play_android.utils.Conf;
 import com.app.legend.lan_play_android.utils.Database;
 import com.app.legend.lan_play_android.utils.LogUtils;
 import com.app.legend.lan_play_android.utils.MyUtils;
-import com.app.legend.lan_play_android.utils.RootGet;
 import com.app.legend.lan_play_android.utils.ShellCommandExecutor;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class MainActivity extends BaseActivity {
@@ -54,7 +51,6 @@ public class MainActivity extends BaseActivity {
     private LinearLayoutManager linearLayoutManager;
     private MainAdapter adapter;
     private Toolbar toolbar;
-    private TextView pre_infos;
     private FloatingActionButton add;
 
 
@@ -78,32 +74,24 @@ public class MainActivity extends BaseActivity {
 
         recyclerView = findViewById(R.id.main_list);
         toolbar = findViewById(R.id.toolbar);
-        pre_infos = findViewById(R.id.pre_infos);
         add = findViewById(R.id.add);
+
 
     }
 
     private void event() {
 
-        pre_infos.setOnClickListener(v -> {
-
-            PreferenceFragment fragment = new PreferenceFragment();
-            openFragment(fragment);
-
-        });
-
         add.setOnClickListener(v -> {
 
             PreBean bean = new PreBean();
 
-            bean.setName("xx服务器1线-马车8");
+            bean.setName("xx服务器1线-怪物猎人xx");
             bean.setUrl("example.com:port or ip:port");
             adapter.addBean(bean);
 
             Database.getDefault().addItem(bean);
 
         });
-
 
     }
 
@@ -199,12 +187,8 @@ public class MainActivity extends BaseActivity {
                 List<PreBean> preBeanList = Database.getDefault().getItems();
 
                 runOnUiThread(() -> {
-
                     adapter.setPreBeanList(preBeanList);
-
                 });
-
-
             }
         }.start();
 
@@ -226,43 +210,24 @@ public class MainActivity extends BaseActivity {
                 }
             }.start();
 
-            PreferenceFragment fragment = new PreferenceFragment();
-            openFragment(fragment);
         }
 
     }
 
-    private void openFragment(Fragment fragment) {
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.main_preference, fragment);
-        transaction.addToBackStack(null);
-        transaction.commit();
-    }
-
-    private void removeFragment(Fragment fragment) {
-
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.remove(fragment);
-        fragmentManager.popBackStack();//模拟栈操作，将栈顶null去掉
-        fragmentTransaction.commit();
-
-    }
 
     @WorkerThread
     private void copyFiles() {
 
-        String path="";
+        String path="libs64";
 
         if (MyUtils.is64()){
 
-            path="lib64s/";
+            path="libs64";
 
         }else {
 
-            path="libs/";
+            path="libs";
 
         }
 
@@ -270,12 +235,14 @@ public class MainActivity extends BaseActivity {
         try {
             String[] libList = getAssets().list(path);
 
+            assert libList != null;
             for (String s : libList) {
-                String srcPath = path + s;
+                String srcPath = path +"/"+ s;
 
                 String newPath = getApplicationContext().getFilesDir().getAbsolutePath();
 
-                newPath = newPath + "/"+path + s;
+                newPath = newPath + "/"+path +"/"+ s;
+
 
                 File file = new File(newPath);
 
@@ -311,8 +278,14 @@ public class MainActivity extends BaseActivity {
 
             }
 
+
+            /**
+             *
+             * 转移lan-play文件
+             */
             String[] files = getAssets().list("lan_plays");
 
+            assert files != null;
             for (String s : files) {
 
                 String srcPath = "lan_plays/" + s;
@@ -323,11 +296,6 @@ public class MainActivity extends BaseActivity {
 
                 File file = new File(newPath);
 
-//                if (!file.getParentFile().exists()){
-//
-//                    file.getParentFile().mkdirs();
-//
-//                }
 
                 if (!file.exists()) {
 
@@ -348,8 +316,18 @@ public class MainActivity extends BaseActivity {
 
                     fileOutputStream.close();
 
+
+                    //转移完成后，改权限
+                    String[] chmod=new String[]{"chmod","777",""+s};
+                    new ShellCommandExecutor().addCommand(chmod).addNumber(-1).executePlay();
+
+
+//                    Log.d("file_name--->>>",s);
+
                 }
             }
+
+
 
             File file=new File(getFilesDir(),"log.txt");
 
@@ -379,6 +357,105 @@ public class MainActivity extends BaseActivity {
 
         TextView ss = view.findViewById(R.id.textView);
 
+        Spinner spinner=view.findViewById(R.id.spinner_list);
+
+        /**
+         * 初始化网卡列表
+         */
+
+        Toast.makeText(this, "正在初始化网卡，请授予root权限并稍等~", Toast.LENGTH_LONG).show();
+
+
+        new Thread(){
+            @Override
+            public void run() {
+                super.run();
+
+                String lan="lan-play";
+
+                if (MyUtils.is64()){
+                    lan="lan-play64";
+                }else {
+                    lan="lan-play";
+                }
+
+                String[] get_list=new String[]{"su","-c","./"+lan,"--list-if"};//仅仅是获取网卡列表
+
+                new ShellCommandExecutor().addNumber(-1).addCommand(get_list).executePlay();
+
+                String list_s=ShellCommandExecutor.getOsReader();
+
+                List<String> list=new ArrayList<>();
+
+                if (list_s!=null) {
+
+                    String[] lists = list_s.split("\n");
+
+                    for (int i=0;i<lists.length;i++){
+
+                        if (isStartWithNumber(lists[i])){//判断是否以数字打头
+                            list.add(lists[i]);
+                        }else if (list.size()!=0){
+
+                            String last=list.get(list.size()-1);//获取最后一个，接上
+
+                            list.remove(last);//移除
+
+                            last=last+"\n"+lists[i];
+
+                            list.add(last);
+
+                        }
+
+                    }
+
+                }
+
+                String[] finalList =new String[list.size()];
+
+                for (int i=0;i<list.size();i++){
+
+                    finalList[i]=list.get(i);
+
+                }
+
+
+                Runnable runnable= () -> {
+
+                    ArrayAdapter<String> arrayAdapter=new ArrayAdapter<>(MainActivity.this,
+                            android.R.layout.simple_spinner_item,finalList);
+
+                    arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+                    spinner.setAdapter(arrayAdapter);
+
+                    Toast.makeText(MainActivity.this, "网卡初始化完成~", Toast.LENGTH_SHORT).show();
+
+                };
+
+                runOnUiThread(runnable);//在主线程运行
+
+
+            }
+        }.start();
+
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+
+                bean.setNumber(position+1);//从0开始计，所以要+1
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+
         nameText.setText(bean.getName());
         ip.setText(bean.getUrl());
 
@@ -393,17 +470,17 @@ public class MainActivity extends BaseActivity {
 
             bean.setName(name);
             bean.setUrl(url);
-//            bean.setSs(s);
+
 
             adapter.notifyDataSetChanged();
 
             Database.getDefault().updateItem(bean);
 
-            builder.create().cancel();
+
 
 
         }).setNegativeButton("取消", (dialog, which) -> {
-            builder.create().cancel();
+
 
         }).create().show();
 
@@ -418,18 +495,21 @@ public class MainActivity extends BaseActivity {
 
     }
 
-    //启动
+    //启动lan-play
     private void startLanPlay(PreBean preBean) {
+
+
+        if (preBean.getNumber()<=0){
+
+            Toast.makeText(this, "网卡尚未选择，请在修改页面选择网卡", Toast.LENGTH_SHORT).show();
+
+            return;
+        }
 
         //先获取lan-play的位置 /data/user/0/com.app.legend.lan_play_android/files
 
-        String newPath = getApplicationContext().getFilesDir().getAbsolutePath();
-
-        Log.d("path---->>>", newPath);
 
         String lan_play="";
-
-        //改变lan-play的权限，设为777
 
         if (MyUtils.is64()){
 
@@ -442,9 +522,7 @@ public class MainActivity extends BaseActivity {
         }
 
         //启动命令
-        String startCommand = "./"+lan_play+" --relay-server-addr " + preBean.getUrl();
-
-        String chmod="chmod 777 "+lan_play;
+        String[] startCommand=new String[]{"su","-c","./"+lan_play,"--relay-server-addr",preBean.getUrl()};
 
         preBean.setSelect(1);
 
@@ -457,13 +535,12 @@ public class MainActivity extends BaseActivity {
             public void run() {
                 super.run();
 
-                new ShellCommandExecutor().addCommand("cd " + newPath).addCommand(chmod).addCommand(startCommand).executePlay();
+                new ShellCommandExecutor().addNumber(preBean.getNumber()).addCommand(startCommand).executePlay();
 
                 String result = ShellCommandExecutor.getOsErrorReader();
 
-//                Log.d("result--->>>",result);
 
-                runOnUiThread(() -> {
+                runOnUiThread(() -> {//在UI线程运行，避免在线程改动UI而崩溃
 
                     if (result.contains("ERROR")) {
 
@@ -479,10 +556,6 @@ public class MainActivity extends BaseActivity {
 
                 LogUtils.log(result);//记录
 
-
-//               Log.d("result---->>>",ShellCommandExecutor.getOsErrorReader());
-
-
             }
         }.start();
 
@@ -495,17 +568,7 @@ public class MainActivity extends BaseActivity {
             return;
         }
 
-//        String path = getApplicationContext().getFilesDir().getAbsolutePath();
-
-//        String newPath=getApplicationContext().getFilesDir().getAbsolutePath()+"/lan_plays/log.txt";
-
-//        new ShellCommandExecutor().addCommand("cd " + path).addCommand("chmod 777 log.txt").execute();
-//
-//        LogUtils.log(ShellCommandExecutor.getOsReader());//记录
-
         File file = new File(getFilesDir(), "log.txt");
-
-//        Log.d("file_path----->>",file.getAbsolutePath());
 
 
         if (!file.exists()) {
@@ -531,11 +594,12 @@ public class MainActivity extends BaseActivity {
 
             String pid = stringBuffer.toString();
 
-            String com = "kill -9 " + pid;
+
+            String[] kill=new String[]{"su","-c","kill","-9",""+pid};
 
 //            Log.d("com--->>",com);
 
-            new ShellCommandExecutor().addCommand(com).execute();
+            new ShellCommandExecutor().addNumber(-1).addCommand(kill).executePlay();
 
             bean.setSelect(-1);
             adapter.notifyDataSetChanged();
@@ -544,118 +608,6 @@ public class MainActivity extends BaseActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
-    }
-
-    private void deleteLib(){
-
-        new Thread() {
-
-            @Override
-            public void run() {
-                super.run();
-
-                if (RootGet.upgradeRootPermission(Objects.requireNonNull(getPackageCodePath()))){
-
-
-                    ShellCommandExecutor shellCommandExecutor = new ShellCommandExecutor();
-
-                    shellCommandExecutor.addCommand("cd proc").addCommand("cat mounts").execute();
-
-                    String log = ShellCommandExecutor.getOsReader();//获取输出信息
-
-                    String com = null;
-
-                    if (log != null) {
-                        String[] strings = log.split("\n");
-
-                        for (String s : strings) {
-
-                            if (s.contains("/system")) {
-
-                                com = s;
-
-                                break;
-                            }
-
-                        }
-
-                        if (com != null) {
-
-                            int index = com.indexOf("/system");
-                            index = index + 7;//加上 /system 的长度
-
-
-
-                            com = com.substring(0, index);
-
-                            String c = "mount -o remount -rw " + com;
-
-
-
-                            shellCommandExecutor.addCommand(c).execute();
-
-
-                        }
-
-                        //将lib文件删除
-
-
-                        String[] libList = new String[0];
-                        try {
-                            libList =getAssets().list("libs64");
-
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
-                        for (String s : libList) {
-
-                            String targetPath = "";
-
-                            if (MyUtils.is64()) {
-
-                                targetPath = Environment.getRootDirectory().getAbsolutePath() + "/lib64/";
-                            } else {
-
-                                targetPath = Environment.getRootDirectory().getAbsolutePath() + "/lib/";
-                            }
-
-                            //获取文件下的lib路径
-
-
-                            String c="rm -f "+targetPath+s;
-
-//                            Log.d("ccccc---->>>", c);
-
-                            new ShellCommandExecutor().addCommand(c).execute();
-
-                        }
-
-                        //拷贝完成，恢复system
-
-                        String c = "mount -o remount -rw " + com;
-
-                        new ShellCommandExecutor().addCommand(c).execute();
-
-                        runOnUiThread(()->{
-
-
-                            Toast.makeText(MainActivity.this, "删除成功", Toast.LENGTH_SHORT).show();
-
-                        });
-
-                        LogUtils.log(log);
-
-
-                    }
-
-                }
-
-
-            }
-        }.start();
 
 
     }
@@ -675,12 +627,6 @@ public class MainActivity extends BaseActivity {
 
         switch (item.getItemId()){
 
-            case R.id.delete_lib:
-
-                showLogs();
-
-                break;
-
 
             case R.id.about:
 
@@ -699,29 +645,6 @@ public class MainActivity extends BaseActivity {
 
 
         return true;
-    }
-
-    private void showLogs(){
-
-        AlertDialog.Builder builder=new AlertDialog.Builder(this);
-
-        View view=LayoutInflater.from(this).inflate(R.layout.text,null,false);
-
-        TextView textView=view.findViewById(R.id.text_about);
-
-        String text=getString(R.string.delete_lib);
-
-        textView.setText(text);
-
-        builder.setView(view).setTitle("警告").setPositiveButton("确定要删除",(dialog, which) -> {
-
-            deleteLib();
-
-        }).setNegativeButton("点错了",(dialog, which) -> {
-            builder.create().cancel();
-
-        }).show();
-
     }
 
     private void showAbout(){
@@ -782,5 +705,15 @@ public class MainActivity extends BaseActivity {
 
         }).show();
 
+    }
+
+
+    public static boolean isStartWithNumber(String str) {
+        Pattern pattern = Pattern.compile("[0-9]*");
+        Matcher isNum = pattern.matcher(str.charAt(0)+"");
+        if (!isNum.matches()) {
+            return false;
+        }
+        return true;
     }
 }
