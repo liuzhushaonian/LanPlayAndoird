@@ -86,44 +86,54 @@ public class PreferenceFragment extends Fragment {
 //        Log.d("system--->>>",SYSTEM);
 //        Log.d("vendor--->>>",VENDOR);
 
+        for (int i=0;i<list.length;i++) {
 
-        File file64_system = new File(VENDOR + "/lib64/" + list[0]);
 
-        File file64_vendor = new File(SYSTEM + "/lib64/" + list[0]);
+            File file64_system = new File(VENDOR + "/lib64/" + list[i]);
 
-        if (file64_system.exists() || file64_vendor.exists()) {//64位lib存在
-            lib64.setTextColor(getResources().getColor(R.color.colorGreen));
-            lib64.setText("lib64状态:已存在");
+            File file64_vendor = new File(SYSTEM + "/lib64/" + list[i]);
 
-            Objects.requireNonNull(getActivity())
-                    .getSharedPreferences("lan-play64-android",Context.MODE_PRIVATE).edit()
-                    .putBoolean(Conf.FIRST,false)
-                    .apply();
+            if (file64_system.exists() || file64_vendor.exists()) {//64位lib存在
+                lib64.setTextColor(getResources().getColor(R.color.colorGreen));
+                lib64.setText("lib64状态:已存在");
 
-        } else {
+                Objects.requireNonNull(getActivity())
+                        .getSharedPreferences("lan-play64-android", Context.MODE_PRIVATE).edit()
+                        .putBoolean(Conf.FIRST, false)
+                        .apply();
 
-            lib64.setTextColor(getResources().getColor(R.color.colorRed));
-            lib64.setText("lib64状态:不存在");
+            } else {
 
+                lib64.setTextColor(getResources().getColor(R.color.colorRed));
+                lib64.setText("lib64状态:不存在");
+
+                break;
+
+            }
         }
 
+        for (int i=0;i<list.length;i++) {
 
-        File file_system = new File(VENDOR + "/lib/" + list[0]);
+            File file_system = new File(VENDOR + "/lib/" + list[i]);
 
-        File file_vendor = new File(SYSTEM + "/lib/" + list[0]);
+            File file_vendor = new File(SYSTEM + "/lib/" + list[i]);
 
-        if (file_system.exists() || file_vendor.exists()) {//lib存在
-            lib.setTextColor(getResources().getColor(R.color.colorGreen));
-            lib.setText("lib状态:已存在");
-            Objects.requireNonNull(getActivity())
-                    .getSharedPreferences("lan-play64-android",Context.MODE_PRIVATE).edit()
-                    .putBoolean(Conf.FIRST,false)
-                    .apply();
+            if (file_system.exists() || file_vendor.exists()) {//lib存在
+                lib.setTextColor(getResources().getColor(R.color.colorGreen));
+                lib.setText("lib状态:已存在");
+                Objects.requireNonNull(getActivity())
+                        .getSharedPreferences("lan-play64-android", Context.MODE_PRIVATE).edit()
+                        .putBoolean(Conf.FIRST, false)
+                        .apply();
 
-        } else {
+            } else {
 
-            lib.setTextColor(getResources().getColor(R.color.colorRed));
-            lib.setText("lib状态:不存在");
+                lib.setTextColor(getResources().getColor(R.color.colorRed));
+                lib.setText("lib状态:不存在");
+
+                break;
+
+            }
 
         }
 
@@ -213,7 +223,7 @@ public class PreferenceFragment extends Fragment {
 
                                     targetPath = Environment.getRootDirectory().getAbsolutePath() + "/lib/";
 
-                                    srcPath = getActivity().getFilesDir().getAbsolutePath()+ "/libs/";
+                                    srcPath = getActivity().getFilesDir().getAbsolutePath()+ "/lib/";
                                 }
 
                             } catch (IOException e) {
@@ -224,10 +234,9 @@ public class PreferenceFragment extends Fragment {
 
                                 //获取文件下的lib路径
 
+                                String path=srcPath+s;
 
-                                srcPath=srcPath+s;
-
-                                String c="cp "+srcPath+" "+targetPath;
+                                String c="cp "+path+" "+targetPath;
 
 //                                Log.d("system---->>>", c);
 
@@ -260,8 +269,6 @@ public class PreferenceFragment extends Fragment {
                             getActivity().runOnUiThread(() -> {//失败的解决方法，弹窗提示
 
 //                        Toast.makeText(getContext(), "挂载system分区失败，请使用完整的root或手动", Toast.LENGTH_SHORT).show();
-
-
 
 
                             });

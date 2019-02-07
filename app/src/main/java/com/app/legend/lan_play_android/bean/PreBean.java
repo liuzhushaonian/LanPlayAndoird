@@ -10,11 +10,13 @@ public class PreBean implements Parcelable {
     private String port;
     private int select=-1;
     private String name;
+    private int number=-1;
 
     private int ss=1;
 
     public PreBean() {
     }
+
 
     protected PreBean(Parcel in) {
         id = in.readInt();
@@ -22,6 +24,7 @@ public class PreBean implements Parcelable {
         port = in.readString();
         select = in.readInt();
         name = in.readString();
+        number = in.readInt();
         ss = in.readInt();
     }
 
@@ -85,6 +88,14 @@ public class PreBean implements Parcelable {
         this.ss = ss;
     }
 
+    public int getNumber() {
+        return number;
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
+    }
+
 
     @Override
     public int describeContents() {
@@ -98,6 +109,7 @@ public class PreBean implements Parcelable {
         dest.writeString(port);
         dest.writeInt(select);
         dest.writeString(name);
+        dest.writeInt(number);
         dest.writeInt(ss);
     }
 }

@@ -21,8 +21,11 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.PopupMenu;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,8 +46,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class MainActivity extends BaseActivity {
@@ -96,7 +102,7 @@ public class MainActivity extends BaseActivity {
 
             PreBean bean = new PreBean();
 
-            bean.setName("xx服务器1线-马车8");
+            bean.setName("xx服务器1线-怪物猎人xx");
             bean.setUrl("example.com:port or ip:port");
             adapter.addBean(bean);
 
@@ -258,11 +264,11 @@ public class MainActivity extends BaseActivity {
 
         if (MyUtils.is64()){
 
-            path="lib64s/";
+            path="libs64";
 
         }else {
 
-            path="libs/";
+            path="lib";
 
         }
 
@@ -271,11 +277,13 @@ public class MainActivity extends BaseActivity {
             String[] libList = getAssets().list(path);
 
             for (String s : libList) {
-                String srcPath = path + s;
+                String srcPath = path +"/"+ s;
 
                 String newPath = getApplicationContext().getFilesDir().getAbsolutePath();
 
-                newPath = newPath + "/"+path + s;
+                newPath = newPath + "/"+path +"/"+ s;
+
+
 
                 File file = new File(newPath);
 
@@ -348,6 +356,10 @@ public class MainActivity extends BaseActivity {
 
                     fileOutputStream.close();
 
+                    //转移完成后，改权限
+                    String[] chmod=new String[]{"chmod","777",""+s};
+                    new ShellCommandExecutor().addCommand(chmod).addNumber(-1).executePlay();
+
                 }
             }
 
@@ -381,6 +393,117 @@ public class MainActivity extends BaseActivity {
 
         nameText.setText(bean.getName());
         ip.setText(bean.getUrl());
+
+        Spinner spinner=view.findViewById(R.id.spinner_list);
+
+        /**
+         * 初始化网卡列表
+         */
+
+        Toast.makeText(this, "正在初始化网卡，请授予root权限并稍等~", Toast.LENGTH_LONG).show();
+
+
+        new Thread(){
+            @Override
+            public void run() {
+                super.run();
+
+                String lan="lan-play";
+
+                if (MyUtils.is64()){
+                    lan="lan-play64";
+                }else {
+                    lan="lan-play";
+                }
+
+                String[] get_list=new String[]{"su","-c","./"+lan,"--list-if"};//仅仅是获取网卡列表
+
+                new ShellCommandExecutor().addNumber(-1).addCommand(get_list).executePlay();
+
+                String list_s=ShellCommandExecutor.getOsReader();
+
+
+                String ee=ShellCommandExecutor.getOsErrorReader();
+
+                if (ee.length()>0) {
+
+                    LogUtils.log(ee);
+                }
+
+//                Log.d("list_s---->>>",list_s);
+
+                List<String> list=new ArrayList<>();
+
+                if (list_s!=null) {
+
+                    String[] lists = list_s.split("\n");
+
+                    for (int i=0;i<lists.length;i++){
+
+                        if (isStartWithNumber(lists[i])){//判断是否以数字打头
+                            list.add(lists[i]);
+                        }else if (list.size()!=0){
+
+                            String last=list.get(list.size()-1);//获取最后一个，接上
+
+                            list.remove(last);//移除
+
+                            last=last+"\n"+lists[i];
+
+                            list.add(last);
+
+                        }
+
+                    }
+
+                }
+
+                String[] finalList =new String[list.size()];
+
+                for (int i=0;i<list.size();i++){
+
+                    finalList[i]=list.get(i);
+
+                }
+
+
+                Runnable runnable= () -> {
+
+                    ArrayAdapter<String> arrayAdapter=new ArrayAdapter<>(MainActivity.this,
+                            android.R.layout.simple_spinner_item,finalList);
+
+                    arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+                    spinner.setAdapter(arrayAdapter);
+
+                    Toast.makeText(MainActivity.this, "网卡初始化完成~", Toast.LENGTH_SHORT).show();
+
+                };
+
+                runOnUiThread(runnable);//在主线程运行
+
+
+            }
+        }.start();
+
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+
+                bean.setNumber(position+1);//从0开始计，所以要+1
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+
+
 
         builder.setView(view).setPositiveButton("确定", (dialog, which) -> {
 
@@ -422,10 +545,12 @@ public class MainActivity extends BaseActivity {
     private void startLanPlay(PreBean preBean) {
 
         //先获取lan-play的位置 /data/user/0/com.app.legend.lan_play_android/files
+        if (preBean.getNumber()<=0){
 
-        String newPath = getApplicationContext().getFilesDir().getAbsolutePath();
+            Toast.makeText(this, "请在修改页面设置网卡", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-        Log.d("path---->>>", newPath);
 
         String lan_play="";
 
@@ -441,10 +566,10 @@ public class MainActivity extends BaseActivity {
 
         }
 
-        //启动命令
-        String startCommand = "./"+lan_play+" --relay-server-addr " + preBean.getUrl();
 
-        String chmod="chmod 777 "+lan_play;
+
+        //启动命令
+        String[] startCommand=new String[]{"su","-c","./"+lan_play,"--relay-server-addr",preBean.getUrl()};
 
         preBean.setSelect(1);
 
@@ -457,7 +582,7 @@ public class MainActivity extends BaseActivity {
             public void run() {
                 super.run();
 
-                new ShellCommandExecutor().addCommand("cd " + newPath).addCommand(chmod).addCommand(startCommand).executePlay();
+                new ShellCommandExecutor().addNumber(preBean.getNumber()).addCommand(startCommand).executePlay();
 
                 String result = ShellCommandExecutor.getOsErrorReader();
 
@@ -531,11 +656,11 @@ public class MainActivity extends BaseActivity {
 
             String pid = stringBuffer.toString();
 
-            String com = "kill -9 " + pid;
+            String[] kill=new String[]{"su","-c","kill","-9",""+pid};
 
 //            Log.d("com--->>",com);
 
-            new ShellCommandExecutor().addCommand(com).execute();
+            new ShellCommandExecutor().addNumber(-1).addCommand(kill).executePlay();
 
             bean.setSelect(-1);
             adapter.notifyDataSetChanged();
@@ -783,4 +908,20 @@ public class MainActivity extends BaseActivity {
         }).show();
 
     }
+
+    public boolean isStartWithNumber(String str) {
+
+        if (str==null||str.length()==0){
+            return false;
+        }
+
+        Pattern pattern = Pattern.compile("[0-9]*");
+        Matcher isNum = pattern.matcher(str.charAt(0)+"");
+        if (!isNum.matches()) {
+            return false;
+        }
+        return true;
+    }
+
+
 }

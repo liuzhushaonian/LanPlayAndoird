@@ -5,6 +5,7 @@ import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
@@ -39,6 +40,25 @@ public class ShellCommandExecutor {
 
     private static BufferedReader osReader = null;
     private static BufferedReader osErrorReader = null;
+    private String[] commands;
+    private int number=-1;
+
+
+    public ShellCommandExecutor addCommand(String[] commands){
+
+        this.commands=commands;
+
+        return this;
+
+    }
+
+    public ShellCommandExecutor addNumber(int n){
+
+        this.number=n;
+
+        return this;
+
+    }
 
 
     public ShellCommandExecutor() {
@@ -50,7 +70,8 @@ public class ShellCommandExecutor {
     }
 
     public int executePlay() {
-        return executeLan(mCommands.toString());
+
+        return executeLan(commands);
     }
 
     public ShellCommandExecutor addCommand(String cmd) {
@@ -100,31 +121,47 @@ public class ShellCommandExecutor {
         }
         return result;
     }
-    private static int executeLan(String command) {
+    private int executeLan(String[] command) {
         int result = -1;
         DataOutputStream dos = null;
         try {
-            Process p = Runtime.getRuntime().exec("su");
-            dos = new DataOutputStream(p.getOutputStream());
-            Log.i(TAG, command);
-            dos.writeBytes(command + "\n");
-            dos.flush();
-            dos.writeBytes("1" + "\n");
-            dos.flush();
-            dos.writeBytes("exit\n");
-            dos.flush();
+
+            ProcessBuilder builder=new ProcessBuilder();
+
+
+            File file=new File(LanApp.getContext().getFilesDir().getAbsolutePath());
+
+            builder.directory(file);//设置改命令运行的位置，主要是在哪个文件夹内
+
+
+            builder.command(command);//运行命令
+
+
+            Process p =builder.start();
+
+            if (number!=-1) {
+
+                dos = new DataOutputStream(p.getOutputStream());
+
+                dos.writeBytes(number + "\n");
+
+                dos.flush();
+            }
+
+
+            p.waitFor();
+
+
+
 
             osReader=new BufferedReader(new InputStreamReader(p.getInputStream()));
             osErrorReader=new BufferedReader(new InputStreamReader(p.getErrorStream()));
 
-//            Log.d("cc--->>>",readOSMessage(osReader));
-//
-//            Log.e("ee---->>>",readOSMessage(osErrorReader));
+//            Log.d("rr--->>>",readOSMessage(osReader));
+//            Log.d("ee--->>>",readOSMessage(osErrorReader));
+
 
             LogUtils.log(command);
-
-            p.waitFor();
-            result = p.exitValue();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -152,11 +189,6 @@ public class ShellCommandExecutor {
         return null;
     }
 
-    public static void cleanReader(){
-
-        osReader=null;
-
-    }
 
     public static String getOsErrorReader() {
         try {
