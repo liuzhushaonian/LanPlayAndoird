@@ -43,6 +43,12 @@ public class ShellCommandExecutor {
     private String[] commands;
     private int number=-1;
 
+    private String log;
+
+
+    public String getLog() {
+        return log;
+    }
 
     public ShellCommandExecutor addCommand(String[] commands){
 
@@ -83,13 +89,13 @@ public class ShellCommandExecutor {
         return this;
     }
 
-    private static int execute(String command) {
+    private int execute(String command) {
         int result = -1;
         DataOutputStream dos = null;
         try {
             Process p = Runtime.getRuntime().exec("su");
             dos = new DataOutputStream(p.getOutputStream());
-            Log.i(TAG, command);
+//            Log.i(TAG, command);
             dos.writeBytes(command + "\n");
             dos.flush();
 //            dos.writeBytes("1 &" + "\n");
@@ -100,9 +106,11 @@ public class ShellCommandExecutor {
             osReader=new BufferedReader(new InputStreamReader(p.getInputStream()));
             osErrorReader=new BufferedReader(new InputStreamReader(p.getErrorStream()));
 
-//            Log.d("cc--->>>",readOSMessage(osReader));
+            log=readOSMessage(osReader);
 
-//            Log.e("ee---->>>",readOSMessage(osErrorReader));
+//            Log.d("cc--->>>",readOSMessage(osReader));
+//
+            Log.e("ee---->>>",readOSMessage(osErrorReader));
 
             LogUtils.log(command);
             p.waitFor();
@@ -151,14 +159,11 @@ public class ShellCommandExecutor {
 
             p.waitFor();
 
-
-
-
             osReader=new BufferedReader(new InputStreamReader(p.getInputStream()));
             osErrorReader=new BufferedReader(new InputStreamReader(p.getErrorStream()));
 
 //            Log.d("rr--->>>",readOSMessage(osReader));
-//            Log.d("ee--->>>",readOSMessage(osErrorReader));
+            Log.d("ee--->>>",readOSMessage(osErrorReader));
 
 
             LogUtils.log(command);

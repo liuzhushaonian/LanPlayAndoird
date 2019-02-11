@@ -422,6 +422,8 @@ public class MainActivity extends BaseActivity {
 
                 String list_s=ShellCommandExecutor.getOsReader();
 
+                Log.d("list--->>",list_s);
+
 
                 String ee=ShellCommandExecutor.getOsErrorReader();
 
@@ -891,8 +893,7 @@ public class MainActivity extends BaseActivity {
 
         TextView textView=view.findViewById(R.id.text_about);
 
-
-        textView.setText(LogUtils.getLogs());
+        textView.setText("日志加载中");
 
         builder.setView(view).setTitle("日志").setPositiveButton("清除",(dialog, which) -> {
 
@@ -906,6 +907,27 @@ public class MainActivity extends BaseActivity {
             builder.create().cancel();
 
         }).show();
+
+        new Thread(){
+
+            @Override
+            public void run() {
+                super.run();
+
+                String log=LogUtils.getLogs();
+
+                Runnable runnable= () -> {
+
+                    textView.setText("");
+
+                    textView.setText(log);
+
+                };
+
+                runOnUiThread(runnable);
+
+            }
+        }.start();
 
     }
 

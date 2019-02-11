@@ -159,7 +159,17 @@ public class PreferenceFragment extends Fragment {
 
                         shellCommandExecutor.addCommand("cd proc").addCommand("cat mounts").execute();
 
-                        String log = ShellCommandExecutor.getOsReader();//获取输出信息
+//                        String[] mount=new String[]{"su","-c","cat","/proc/mounts"};
+//
+//
+//                        ShellCommandExecutor shellCommandExecutor=new ShellCommandExecutor().addNumber(-1).addCommand(mount);
+//
+//                        shellCommandExecutor.executePlay();
+
+                        String log = shellCommandExecutor.getLog();//获取输出信息
+
+
+                        Log.d("log--->>>",log);
 
                         String com = null;
 
@@ -188,9 +198,9 @@ public class PreferenceFragment extends Fragment {
 
                                 String c = "mount -o remount -rw " + com;
 
-//                        Log.d("cccc----->>>",c);
+                        Log.d("cccc----->>>",c);
 
-                                shellCommandExecutor.addCommand(c).execute();
+//                                shellCommandExecutor.addCommand(c).execute();
 //
 //                        log=ShellCommandExecutor.getOsReader();
 
@@ -238,7 +248,7 @@ public class PreferenceFragment extends Fragment {
 
                                 String c="cp "+path+" "+targetPath;
 
-//                                Log.d("system---->>>", c);
+                                Log.d("system---->>>", c);
 
                                 new ShellCommandExecutor().addCommand(c).execute();
 
