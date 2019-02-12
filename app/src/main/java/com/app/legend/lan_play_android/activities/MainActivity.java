@@ -416,20 +416,28 @@ public class MainActivity extends BaseActivity {
                     lan="lan-play";
                 }
 
-                String[] get_list=new String[]{"su","-c","./"+lan,"--list-if"};//仅仅是获取网卡列表
+                String[] get_list=new String[]{"su","--command","./"+lan,"--list-if"};//仅仅是获取网卡列表
 
-                new ShellCommandExecutor().addNumber(-1).addCommand(get_list).executePlay();
+                ShellCommandExecutor shellCommandExecutor=new ShellCommandExecutor().addNumber(-1).addCommand(get_list);
 
-                String list_s=ShellCommandExecutor.getOsReader();
+                shellCommandExecutor.executePlay();
 
-                Log.d("list--->>",list_s);
+                String list_s=shellCommandExecutor.getLog();
 
+                String error=shellCommandExecutor.getError();
+
+                LogUtils.log(error);
+//                LogUtils.log(list_s);
 
                 String ee=ShellCommandExecutor.getOsErrorReader();
 
                 if (ee.length()>0) {
 
                     LogUtils.log(ee);
+
+                    Toast.makeText(MainActivity.this, "发生了错误，请查阅日志或使用完整root，小米手机请不要用开发版自带的root", Toast.LENGTH_SHORT).show();
+
+                    return;
                 }
 
 //                Log.d("list_s---->>>",list_s);
@@ -442,8 +450,17 @@ public class MainActivity extends BaseActivity {
 
                     for (int i=0;i<lists.length;i++){
 
-                        if (isStartWithNumber(lists[i])){//判断是否以数字打头
-                            list.add(lists[i]);
+                        String s=lists[i];
+
+                        if (isStartWithNumber(s)){//判断是否以数字打头
+
+                            Log.d("ss-->>>",s);
+
+//                            if (s.contains("(No description available)")){
+                                s=s.replace("(No description available)","");
+//                            }
+
+                            list.add(s);
                         }else if (list.size()!=0){
 
                             String last=list.get(list.size()-1);//获取最后一个，接上
@@ -584,9 +601,11 @@ public class MainActivity extends BaseActivity {
             public void run() {
                 super.run();
 
-                new ShellCommandExecutor().addNumber(preBean.getNumber()).addCommand(startCommand).executePlay();
+               ShellCommandExecutor shellCommandExecutor= new ShellCommandExecutor().addNumber(preBean.getNumber()).addCommand(startCommand);
 
-                String result = ShellCommandExecutor.getOsErrorReader();
+               shellCommandExecutor.executePlay();
+
+                String result =shellCommandExecutor.getError();
 
 //                Log.d("result--->>>",result);
 
@@ -690,7 +709,7 @@ public class MainActivity extends BaseActivity {
 
                     shellCommandExecutor.addCommand("cd proc").addCommand("cat mounts").execute();
 
-                    String log = ShellCommandExecutor.getOsReader();//获取输出信息
+                    String log = shellCommandExecutor.getLog();//获取输出信息
 
                     String com = null;
 
@@ -722,6 +741,40 @@ public class MainActivity extends BaseActivity {
 
 
                             shellCommandExecutor.addCommand(c).execute();
+
+
+                            log=shellCommandExecutor.getError();
+
+                            LogUtils.log(log);
+
+                            if (log!=null&&!log.isEmpty()){
+
+                                String c1="mount -o rw,remount /system";//备用挂载方案
+
+                                ShellCommandExecutor commandExecutor=new ShellCommandExecutor().addCommand(c1);
+
+                                commandExecutor.execute();
+
+                                String e=commandExecutor.getError();
+
+                                if (e!=null&&!e.isEmpty()){//再次检查
+
+                                    LogUtils.log(e);
+
+
+                                    Runnable runnable= () -> Toast.makeText(MainActivity.this, "挂载失败", Toast.LENGTH_SHORT).show();
+
+                                   runOnUiThread(runnable);
+
+                                    return;
+
+                                }
+
+//                            return;
+                            }
+
+
+
 
 
                         }
@@ -762,9 +815,11 @@ public class MainActivity extends BaseActivity {
 
                         //拷贝完成，恢复system
 
-                        String c = "mount -o remount -rw " + com;
+                        String c = "mount -o remount -ro " + com;
 
-                        new ShellCommandExecutor().addCommand(c).execute();
+                        String cc="mount -o ro,remount /system";
+
+                        new ShellCommandExecutor().addCommand(c).addCommand(cc).execute();
 
                         runOnUiThread(()->{
 

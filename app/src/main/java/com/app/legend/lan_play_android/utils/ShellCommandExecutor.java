@@ -43,11 +43,16 @@ public class ShellCommandExecutor {
     private String[] commands;
     private int number=-1;
 
-    private String log;
+    private String log="";
 
+    private String error="";
 
     public String getLog() {
         return log;
+    }
+
+    public String getError() {
+        return error;
     }
 
     public ShellCommandExecutor addCommand(String[] commands){
@@ -95,11 +100,20 @@ public class ShellCommandExecutor {
         try {
             Process p = Runtime.getRuntime().exec("su");
             dos = new DataOutputStream(p.getOutputStream());
-//            Log.i(TAG, command);
+
             dos.writeBytes(command + "\n");
             dos.flush();
-//            dos.writeBytes("1 &" + "\n");
-//            dos.flush();
+
+            if (number!=-1) {
+
+                dos = new DataOutputStream(p.getOutputStream());
+
+                dos.writeBytes(number + "\n");
+
+                dos.flush();
+            }
+
+
             dos.writeBytes("exit\n");
             dos.flush();
 
@@ -108,9 +122,9 @@ public class ShellCommandExecutor {
 
             log=readOSMessage(osReader);
 
-//            Log.d("cc--->>>",readOSMessage(osReader));
-//
-            Log.e("ee---->>>",readOSMessage(osErrorReader));
+            error=readOSMessage(osErrorReader);
+
+
 
             LogUtils.log(command);
             p.waitFor();
@@ -147,14 +161,6 @@ public class ShellCommandExecutor {
 
             Process p =builder.start();
 
-            if (number!=-1) {
-
-                dos = new DataOutputStream(p.getOutputStream());
-
-                dos.writeBytes(number + "\n");
-
-                dos.flush();
-            }
 
 
             p.waitFor();
@@ -162,8 +168,12 @@ public class ShellCommandExecutor {
             osReader=new BufferedReader(new InputStreamReader(p.getInputStream()));
             osErrorReader=new BufferedReader(new InputStreamReader(p.getErrorStream()));
 
+            error=readOSMessage(osErrorReader);
+
+            log=readOSMessage(osReader);
+
 //            Log.d("rr--->>>",readOSMessage(osReader));
-            Log.d("ee--->>>",readOSMessage(osErrorReader));
+//            Log.d("ee--->>>",readOSMessage(osErrorReader));
 
 
             LogUtils.log(command);

@@ -171,7 +171,27 @@ public class PreferenceFragment extends Fragment {
 
                         Log.d("log--->>>",log);
 
+
+                        String error=shellCommandExecutor.getError();
+
+                        if (error!=null)
+
+                        Log.d("error--->>>",error);
+
                         String com = null;
+
+
+                        if(error!=null&&!error.isEmpty()){
+
+                            LogUtils.log(error);
+
+                            Runnable runnable= () -> Toast.makeText(getContext(), "配置失败，请查阅日志寻找原因", Toast.LENGTH_SHORT).show();
+
+                            getActivity().runOnUiThread(runnable);
+
+
+                            return;
+                        }
 
                         if (log != null) {
                             String[] strings = log.split("\n");
@@ -197,12 +217,46 @@ public class PreferenceFragment extends Fragment {
                                 com = com.substring(0, index);
 
                                 String c = "mount -o remount -rw " + com;
-
-                        Log.d("cccc----->>>",c);
-
-//                                shellCommandExecutor.addCommand(c).execute();
 //
-//                        log=ShellCommandExecutor.getOsReader();
+//                                String u="umount "+com;
+
+
+
+//                        Log.d("cccc----->>>",c);
+
+//                                shellCommandExecutor.addCommand(u).execute();
+
+                        shellCommandExecutor.addCommand(c).execute();
+//
+                        log=shellCommandExecutor.getError();
+
+                        LogUtils.log(log);
+
+                        if (log!=null&&!log.isEmpty()){
+
+                            String c1="mount -o rw,remount /system";//备用挂载方案
+
+                            ShellCommandExecutor commandExecutor=new ShellCommandExecutor().addCommand(c1);
+
+                            commandExecutor.execute();
+
+                            String e=commandExecutor.getError();
+
+                            if (e!=null&&!e.isEmpty()){//再次检查
+
+                                LogUtils.log(e);
+
+
+                                Runnable runnable= () -> Toast.makeText(getActivity(), "挂载失败", Toast.LENGTH_SHORT).show();
+
+                                getActivity().runOnUiThread(runnable);
+
+                                return;
+
+                            }
+
+//                            return;
+                        }
 
 //                        Log.d("log22---->>>",log);
 
@@ -211,8 +265,6 @@ public class PreferenceFragment extends Fragment {
                             //将lib文件拷贝到相关文件夹下
 
                             String targetPath = "";
-
-
 
 
                             String[] libList = new String[0];
@@ -256,9 +308,11 @@ public class PreferenceFragment extends Fragment {
 
                             //拷贝完成，恢复system
 
-                            String c = "mount -o remount -rw " + com;
+                            String c = "mount -o remount -ro " + com;
 
-                            new ShellCommandExecutor().addCommand(c).execute();
+                            String cc="mount -o ro,remount /system";
+
+                            new ShellCommandExecutor().addCommand(c).addCommand(cc).execute();
 
                             SharedPreferences sharedPreferences=getActivity().getSharedPreferences("lan-play64-android",Context.MODE_PRIVATE);
 
