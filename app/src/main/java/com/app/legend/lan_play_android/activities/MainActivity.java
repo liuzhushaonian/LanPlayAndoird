@@ -416,7 +416,7 @@ public class MainActivity extends BaseActivity {
                     lan="lan-play";
                 }
 
-                String[] get_list=new String[]{"su","--command","./"+lan,"--list-if"};//仅仅是获取网卡列表
+                String[] get_list=new String[]{"su","-c","./"+lan,"--list-if"};//仅仅是获取网卡列表
 
                 ShellCommandExecutor shellCommandExecutor=new ShellCommandExecutor().addNumber(-1).addCommand(get_list);
 
@@ -454,7 +454,7 @@ public class MainActivity extends BaseActivity {
 
                         if (isStartWithNumber(s)){//判断是否以数字打头
 
-                            Log.d("ss-->>>",s);
+//                            Log.d("ss-->>>",s);
 
 //                            if (s.contains("(No description available)")){
                                 s=s.replace("(No description available)","");
