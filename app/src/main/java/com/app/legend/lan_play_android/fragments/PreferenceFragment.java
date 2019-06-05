@@ -95,7 +95,14 @@ public class PreferenceFragment extends Fragment {
 
             if (file64_system.exists() || file64_vendor.exists()) {//64位lib存在
                 lib64.setTextColor(getResources().getColor(R.color.colorGreen));
-                lib64.setText("lib64状态:已存在");
+
+                String s=getResources().getString(R.string.lib64_info);
+
+                String ss=getString(R.string.exist);
+
+                String sss=s+ss;
+
+                lib64.setText(sss);
 
                 Objects.requireNonNull(getActivity())
                         .getSharedPreferences("lan-play64-android", Context.MODE_PRIVATE).edit()
@@ -105,7 +112,13 @@ public class PreferenceFragment extends Fragment {
             } else {
 
                 lib64.setTextColor(getResources().getColor(R.color.colorRed));
-                lib64.setText("lib64状态:不存在");
+
+                String s=getResources().getString(R.string.lib64_info);
+
+                String ss=getString(R.string.no_exist);
+
+                String sss=s+ss;
+                lib64.setText(sss);
 
                 break;
 
@@ -120,7 +133,14 @@ public class PreferenceFragment extends Fragment {
 
             if (file_system.exists() || file_vendor.exists()) {//lib存在
                 lib.setTextColor(getResources().getColor(R.color.colorGreen));
-                lib.setText("lib状态:已存在");
+
+                String s=getResources().getString(R.string.lib_info);
+
+                String ss=getString(R.string.exist);
+
+                String sss=s+ss;
+
+                lib.setText(sss);
                 Objects.requireNonNull(getActivity())
                         .getSharedPreferences("lan-play64-android", Context.MODE_PRIVATE).edit()
                         .putBoolean(Conf.FIRST, false)
@@ -129,7 +149,12 @@ public class PreferenceFragment extends Fragment {
             } else {
 
                 lib.setTextColor(getResources().getColor(R.color.colorRed));
-                lib.setText("lib状态:不存在");
+                String s=getResources().getString(R.string.lib_info);
+
+                String ss=getString(R.string.no_exist);
+
+                String sss=s+ss;
+                lib.setText(sss);
 
                 break;
 
@@ -169,14 +194,14 @@ public class PreferenceFragment extends Fragment {
                         String log = shellCommandExecutor.getLog();//获取输出信息
 
 
-                        Log.d("log--->>>",log);
+//                        Log.d("log--->>>",log);
 
 
                         String error=shellCommandExecutor.getError();
 
-                        if (error!=null)
+//                        if (error!=null)
 
-                        Log.d("error--->>>",error);
+//                        Log.d("error--->>>",error);
 
                         String com = null;
 
@@ -185,7 +210,9 @@ public class PreferenceFragment extends Fragment {
 
                             LogUtils.log(error);
 
-                            Runnable runnable= () -> Toast.makeText(getContext(), "配置失败，请查阅日志寻找原因", Toast.LENGTH_SHORT).show();
+                            String s=getString(R.string.config_error);
+
+                            Runnable runnable= () -> Toast.makeText(getContext(), s, Toast.LENGTH_SHORT).show();
 
                             getActivity().runOnUiThread(runnable);
 
@@ -247,7 +274,8 @@ public class PreferenceFragment extends Fragment {
                                 LogUtils.log(e);
 
 
-                                Runnable runnable= () -> Toast.makeText(getActivity(), "挂载失败", Toast.LENGTH_SHORT).show();
+
+                                Runnable runnable= () -> Toast.makeText(getActivity(), getString(R.string.Mount_failed), Toast.LENGTH_SHORT).show();
 
                                 getActivity().runOnUiThread(runnable);
 
@@ -321,7 +349,7 @@ public class PreferenceFragment extends Fragment {
                             getActivity().runOnUiThread(()->{
 
                                 initLibs(getContext());
-                                Toast.makeText(getContext(), "配置成功", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), getString(R.string.mount_success), Toast.LENGTH_SHORT).show();
 
                             });
 

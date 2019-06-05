@@ -1,0 +1,124 @@
+<resources>
+    <string name="app_name">lan-play</string>
+
+    <string name="comd">input the command</string>
+
+    <string name="button">Click to test</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="infos">
+        A little explanation\n
+
+        If one of lib64 or lib already exists\n
+
+        No need to continue \n
+
+        Can return to the connection server \n\n
+
+
+        This app is based on lan-play\n
+
+        So you need root privileges\n
+
+        Tap to grant root privileges and continue \n
+
+    </string>
+
+    <string name="about">
+        This app is based on lan-play\n\n
+        Address: https://github.com/spacemeowx2/switch-lan-play\n\n
+        I do not provide any server\n\n
+        has a problem? Visit the link below\n
+        https://github.com/liuzhushaonian/LanPlayAndoird/blob/master/QUEST.md
+
+
+    </string>
+
+    <string name="root_info">Root state:</string>
+
+    <string name="lib64_info">lib64 state:</string>
+
+    <string name="lib_info">lib state:</string>
+
+    <string name="get_all">deploy</string>
+
+    <string name="server_name">name</string>
+    <string name="server_ip">ip:port Or domain name:port</string>
+
+    <string name="pre">Configuration</string>
+
+    <string name="delete_lib">
+
+        This operation is used to delete the lib dependencies placed under system\n\n
+
+        If you want to uninstall this app\n\n
+
+        Then do this operation\n\n
+
+        Lan-play will not work properly after relying on deletion\n\n
+
+        Of course you can reconfigure dependencies on the configuration page\n\n
+
+    </string>
+
+
+
+    <string name="exist">exist</string>
+
+
+    <string name="no_exist">does not exist</string>
+
+    <string name="config_error">Configuration failed, please check the log for reason</string>
+
+    <string name="Mount_failed">Mount failed</string>
+
+    <string name="mount_success">Successful configuration</string>
+
+    <string name="list_item_name">Server 1 line - Monster Hunter xx</string>
+
+    <string name="want_root">Initializing the network card, please grant root privileges and wait a moment~</string>
+
+    <string name="root_error">An error has occurred, please check the log or use the full root.
+        Please do not use the root of the development version of the Xiaomi mobile phone.</string>
+
+    <string name="netcard_init">Network card initialization completed~</string>
+
+    <string name="determine">determine</string>
+
+    <string name="cancel">cancel</string>
+
+    <string name="change_netcard">Please set the network card on the modification page.</string>
+
+    <string name="faile">Startup failed</string>
+
+    <string name="delete">deleted</string>
+    <string name="jing">warning</string>
+    <string name="sure_delete">confirm delete</string>
+
+    <string name="version">current version</string>
+
+    <string name="about_title">about</string>
+
+    <string name="loading_log">Log loading</string>
+
+    <string name="log">log</string>
+
+    <string name="clear">clear</string>
+
+    <string name="clear_compele">Clear complete</string>
+
+    <string name="back">back</string>
+
+    <string name="delete_dep">Delete dependency</string>
+
+    <string name="see_log">View log</string>
+
+    <string name="modify">modify</string>
+
+    <string name="del">delete</string>
+
+    <string name="configuration">Configuration</string>
+
+</resources>

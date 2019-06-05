@@ -23,7 +23,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="配置"
+                android:text="@string/configuration"
                 android:textColor="@color/colorWhite"
                 android:id="@+id/pre_infos"
                 />

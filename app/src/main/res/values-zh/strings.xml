@@ -57,7 +57,6 @@
 
     <string name="no_exist">不存在</string>
 
-
     <string name="config_error">配置失败，请查阅日志寻找原因</string>
 
     <string name="Mount_failed">挂载失败</string>
@@ -81,13 +80,10 @@
     <string name="faile">启动失败</string>
 
     <string name="delete">删除成功</string>
-
     <string name="jing">警告</string>
-
     <string name="sure_delete">确定要删除</string>
 
     <string name="version">当前版本</string>
-
     <string name="about_title">关于</string>
 
     <string name="loading_log">日志加载中</string>
@@ -109,5 +105,4 @@
     <string name="del">删除</string>
 
     <string name="configuration">配置</string>
-
 </resources>

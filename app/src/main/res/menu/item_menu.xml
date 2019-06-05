@@ -2,12 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:title="修改"
+        android:title="@string/modify"
         android:id="@+id/edit_item"
         />
 
     <item
-        android:title="删除"
+        android:title="@string/del"
         android:id="@+id/delete_item"
         />
 

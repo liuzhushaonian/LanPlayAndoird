@@ -102,8 +102,8 @@ public class MainActivity extends BaseActivity {
 
             PreBean bean = new PreBean();
 
-            bean.setName("xx服务器1线-怪物猎人xx");
-            bean.setUrl("example.com:port or ip:port");
+            bean.setName(getString(R.string.list_item_name));
+            bean.setUrl(getString(R.string.server_ip));
             adapter.addBean(bean);
 
             Database.getDefault().addItem(bean);
@@ -400,7 +400,7 @@ public class MainActivity extends BaseActivity {
          * 初始化网卡列表
          */
 
-        Toast.makeText(this, "正在初始化网卡，请授予root权限并稍等~", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, getString(R.string.want_root), Toast.LENGTH_LONG).show();
 
 
         new Thread(){
@@ -435,7 +435,7 @@ public class MainActivity extends BaseActivity {
 
                     LogUtils.log(ee);
 
-                    Toast.makeText(MainActivity.this, "发生了错误，请查阅日志或使用完整root，小米手机请不要用开发版自带的root", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, getString(R.string.root_error), Toast.LENGTH_SHORT).show();
 
                     return;
                 }
@@ -495,7 +495,7 @@ public class MainActivity extends BaseActivity {
 
                     spinner.setAdapter(arrayAdapter);
 
-                    Toast.makeText(MainActivity.this, "网卡初始化完成~", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, getString(R.string.netcard_init), Toast.LENGTH_SHORT).show();
 
                 };
 
@@ -524,7 +524,7 @@ public class MainActivity extends BaseActivity {
 
 
 
-        builder.setView(view).setPositiveButton("确定", (dialog, which) -> {
+        builder.setView(view).setPositiveButton(getString(R.string.determine), (dialog, which) -> {
 
             //获取数据，传入item
             String name = nameText.getText().toString();
@@ -544,7 +544,7 @@ public class MainActivity extends BaseActivity {
             builder.create().cancel();
 
 
-        }).setNegativeButton("取消", (dialog, which) -> {
+        }).setNegativeButton(getString(R.string.cancel), (dialog, which) -> {
             builder.create().cancel();
 
         }).create().show();
@@ -566,7 +566,7 @@ public class MainActivity extends BaseActivity {
         //先获取lan-play的位置 /data/user/0/com.app.legend.lan_play_android/files
         if (preBean.getNumber()<=0){
 
-            Toast.makeText(this, "请在修改页面设置网卡", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.change_netcard), Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -617,7 +617,7 @@ public class MainActivity extends BaseActivity {
 
                         adapter.notifyDataSetChanged();
 
-                        Toast.makeText(MainActivity.this, "启动失败\n" + result, Toast.LENGTH_LONG).show();
+                        Toast.makeText(MainActivity.this, getString(R.string.faile)+"\n" + result, Toast.LENGTH_LONG).show();
 
                     }
 
@@ -762,7 +762,7 @@ public class MainActivity extends BaseActivity {
                                     LogUtils.log(e);
 
 
-                                    Runnable runnable= () -> Toast.makeText(MainActivity.this, "挂载失败", Toast.LENGTH_SHORT).show();
+                                    Runnable runnable= () -> Toast.makeText(MainActivity.this, getString(R.string.Mount_failed), Toast.LENGTH_SHORT).show();
 
                                    runOnUiThread(runnable);
 
@@ -824,7 +824,7 @@ public class MainActivity extends BaseActivity {
                         runOnUiThread(()->{
 
 
-                            Toast.makeText(MainActivity.this, "删除成功", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, getString(R.string.delete), Toast.LENGTH_SHORT).show();
 
                         });
 
@@ -895,11 +895,11 @@ public class MainActivity extends BaseActivity {
 
         textView.setText(text);
 
-        builder.setView(view).setTitle("警告").setPositiveButton("确定要删除",(dialog, which) -> {
+        builder.setView(view).setTitle(getString(R.string.jing)).setPositiveButton(getString(R.string.sure_delete),(dialog, which) -> {
 
             deleteLib();
 
-        }).setNegativeButton("点错了",(dialog, which) -> {
+        }).setNegativeButton(getString(R.string.cancel),(dialog, which) -> {
             builder.create().cancel();
 
         }).show();
@@ -930,12 +930,12 @@ public class MainActivity extends BaseActivity {
             Log.e("VersionInfo", "Exception", e);
         }
 
-        text=text+"\n\n当前版本："+versionName;
+        text=text+"\n\n"+getString(R.string.version)+versionName;
 
 
         textView.setText(text);
 
-        builder.setView(view).setTitle("关于").show();
+        builder.setView(view).setTitle(getString(R.string.about_title)).show();
 
     }
 
@@ -948,16 +948,16 @@ public class MainActivity extends BaseActivity {
 
         TextView textView=view.findViewById(R.id.text_about);
 
-        textView.setText("日志加载中");
+        textView.setText(getString(R.string.loading_log));
 
-        builder.setView(view).setTitle("日志").setPositiveButton("清除",(dialog, which) -> {
+        builder.setView(view).setTitle(getString(R.string.log)).setPositiveButton(getString(R.string.clear),(dialog, which) -> {
 
             LogUtils.cleanLogs();
 
-            Toast.makeText(this, "清除完成", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.clear_compele), Toast.LENGTH_SHORT).show();
 
 
-        }).setNegativeButton("返回",(dialog, which) -> {
+        }).setNegativeButton(getString(R.string.back),(dialog, which) -> {
 
             builder.create().cancel();
 

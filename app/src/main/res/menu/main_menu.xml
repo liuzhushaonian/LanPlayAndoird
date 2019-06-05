@@ -3,18 +3,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:title="删除依赖"
+        android:title="@string/delete_dep"
         android:id="@+id/delete_lib"
         android:icon="@drawable/ic_add_black_24dp"
         />
 
     <item
-        android:title="查阅日志"
+        android:title="@string/see_log"
         android:id="@+id/show_logs"
         />
 
     <item
-        android:title="关于"
+        android:title="@string/about_title"
         android:id="@+id/about"
         app:showAsAction="never"
         
